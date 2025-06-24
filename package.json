@@ -1,0 +1,24 @@
+{
+  "name": "doc-processor",
+  "version": "1.0.0",
+  "description": "Document Processor - Image to Insights OCR with Gemini AI",
+  "scripts": {
+    "start": "concurrently \"uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000\" \"cd frontend && npm start\"",
+    "install-deps": "cd backend && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt && cd ../frontend && npm install",
+    "backend": "uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000",
+    "frontend": "cd frontend && npm start",
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "keywords": [
+    "ocr",
+    "document-processing",
+    "gemini-ai",
+    "fastapi",
+    "react"
+  ],
+  "author": "Document Processor Team",
+  "license": "MIT"
+} 

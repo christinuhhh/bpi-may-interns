@@ -25,9 +25,15 @@ except LookupError:
 # 1) API key and document prompts
 # ─────────────────────────────────────────────────────────────
 
-# Configure Gemini API
-api_key = os.getenv("GEMINI_API_KEY", "AIzaSyBV2FmASb4qUKssZhWmVfx2iPHacWSZuGE")
+# Load environment variables and configure Gemini API
+api_key = os.getenv("GEMINI_API_KEY")
+if not api_key:
+    raise RuntimeError("GEMINI_API_KEY not set in environment. Please create a .env file with your API key.")
+
+# Configure the SDK
 genai.configure(api_key=api_key)
+
+# Initialize your model
 llm = genai.GenerativeModel("models/gemini-1.5-flash")
 
 # ─────────────────────────────────────────────────────────────

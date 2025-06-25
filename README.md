@@ -147,15 +147,6 @@ curl -X POST "http://localhost:8000/api/process" \
 - `POST /api/process` - Process document image
 - `GET /docs` - Interactive API documentation
 
-## Quality Metrics
-
-The application provides several quality metrics:
-
-- **Spelling Error Rate (SER)**: Percentage of misspelled words
-- **Perplexity (PPL)**: Language model perplexity score
-- **Refined SER**: Enhanced spelling error detection
-- **Character Error Rate (CER)**: Character-level accuracy (when ground truth available)
-
 ## Error Handling
 
 The application includes comprehensive error handling:

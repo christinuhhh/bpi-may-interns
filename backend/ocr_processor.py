@@ -744,17 +744,20 @@ def process_document_image(image_bytes, filename=None):
         except:
             pass
 
+        # Prepare metrics with proper handling of infinite values
+        metrics = {
+            "ser": ser,
+            "ppl": 999999.0 if ppl == float("inf") else ppl,  # Replace inf with large finite value
+            "refined_ser": refined_ser,
+            "cer": cer_score,
+            "strict_field_accuracy": strict_accuracy,
+            "fuzzy_field_accuracy": fuzzy_accuracy
+        }
+
         return {
             "document_type": extracted_data.get("document_type", "unknown"),
             "extracted": extracted_data,
-            "metrics": {
-                "ser": ser,
-                "ppl": ppl,
-                "refined_ser": refined_ser,
-                "cer": cer_score,
-                "strict_field_accuracy": strict_accuracy,
-                "fuzzy_field_accuracy": fuzzy_accuracy
-            },
+            "metrics": metrics,
             "raw_text": raw_text,
             "extracted_json": pred_json
         }
@@ -767,7 +770,7 @@ def process_document_image(image_bytes, filename=None):
             "extracted": {},
             "metrics": {
                 "ser": 0.0,
-                "ppl": float("inf"),
+                "ppl": 999999.0,  # Replace inf with large finite value
                 "refined_ser": 0.0,
                 "cer": 0.0,
                 "strict_field_accuracy": 0.0,

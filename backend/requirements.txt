@@ -1,11 +1,25 @@
+# Python version: 3.11
 fastapi
 uvicorn
+
 python-multipart
 Pillow
 torch
 transformers
 nltk
-google
 python-dotenv
 PyPDF2
 pdf2image
+openai
+
+google
+google-genai
+google-api-core
+pprintpp
+pydub
+ffmpeg-python
+requests
+google-cloud-aiplatform
+librosa
+soundfile
+openai-whisper

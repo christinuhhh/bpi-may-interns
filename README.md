@@ -90,6 +90,8 @@ cd bpi-may-interns
 **Option A: Using venv**
 ```bash
 cd backend
+
+# Create a virtual environment
 python3.11 -m venv venv
 
 # Activate virtual environment

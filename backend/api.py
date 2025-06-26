@@ -3,12 +3,21 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 import uvicorn
 from typing import Any, Dict
+from pydantic import BaseModel
 
 from services.audio_whisper import process_audio_with_whisper
 from services.audio_gemini import process_audio_with_gemini
 from services.audio_diarization import process_audio_diarization, AudioDiarizationError
 from services.image_ocr_processor import process_pdf_to_image, process_document_image
 
+class TextRequest(BaseModel):
+    text: str
+
+
+class HelloWorldResponse(BaseModel):
+    message: str
+    received_text: str
+    status: str
 
 app = FastAPI(
     title="Contact Center Operation Insights", 
@@ -85,43 +94,6 @@ async def audio_diarization(audio: UploadFile = File(...)) -> Dict[str, Any]:
     This endpoint accepts audio files and returns speaker diarization results,
     identifying different speakers and their spoken text segments throughout
     the conversation.
-    
-    Args:
-        audio: Uploaded audio file (WAV, MP3, MP4, M4A formats supported)
-        
-    Returns:
-        Dict containing:
-            - segments: List of speaker segments with speaker ID and transcript
-            - statistics: Analysis statistics (number of speakers, turns, duration)
-            - metadata: Processing metadata and file information
-            - raw_response: Original response from Gemini API
-            
-    Raises:
-        HTTPException: 
-            - 400 for invalid file types or unsupported formats
-            - 500 for processing errors or API failures
-            
-    Example Response:
-        {
-            "segments": [
-                {"speaker": "Speaker 1", "text": "Hello, how can I help you today?"},
-                {"speaker": "Speaker 2", "text": "I'm having trouble with my account."}
-            ],
-            "statistics": {
-                "total_turns": 2,
-                "num_speakers": 2,
-                "duration_seconds": 45.3,
-                "duration_formatted": "00:45",
-                "speakers": ["Speaker 1", "Speaker 2"]
-            },
-            "metadata": {
-                "filename": "conversation.wav",
-                "audio_format": "wav",
-                "model_used": "gemini-2.5-pro",
-                "processing_status": "success"
-            },
-            "raw_response": {...}
-        }
     """
     # Validate file type - accept common audio formats
     if not audio.content_type or not audio.content_type.startswith('audio/'):
@@ -226,6 +198,36 @@ async def process_document(document: UploadFile = File(...)):
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Processing failed: {str(e)}")
+    
+@app.post("/text", response_model=HelloWorldResponse)
+async def text_insights(request: TextRequest) -> HelloWorldResponse:
+    """
+    Simple text to insights endpoint
+    """
+    try:
+        # Basic validation
+        if not request.text.strip():
+            raise HTTPException(
+                status_code=400,
+                detail="Text cannot be empty or contain only whitespace."
+            )
+        
+        response = HelloWorldResponse(
+            message="Hello World! Text processing completed successfully.",
+            received_text=request.text,
+            status="success"
+        )
+        
+        return response
+        
+    except HTTPException:
+        raise
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Unexpected error processing text: {str(e)}"
+        )
 
 @app.get("/health")
 async def health_check():

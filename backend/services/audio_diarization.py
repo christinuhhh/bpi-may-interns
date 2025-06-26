@@ -291,33 +291,3 @@ def process_audio_diarization(audio_bytes: bytes, filename: str = None) -> Dict[
     except Exception as e:
         # Catch any unexpected errors
         raise AudioDiarizationError(f"Unexpected error during audio diarization: {str(e)}")
-
-
-# Example usage and testing function
-def test_diarization_service():
-    """
-    Test function for the diarization service.
-    This is mainly for development and debugging purposes.
-    """
-    try:
-        # This would require an actual audio file to test
-        print("Audio diarization service loaded successfully")
-        print("Available functions:")
-        print("- process_audio_diarization(audio_bytes, filename)")
-        print("- get_gemini_client()")
-        print("- get_audio_duration(audio_bytes)")
-        print("- detect_audio_format(audio_bytes)")
-        
-        # Check if API key is available
-        api_key = os.getenv("GEMINI_API_KEY")
-        if api_key:
-            print("✓ GEMINI_API_KEY found in environment")
-        else:
-            print("✗ GEMINI_API_KEY not found in environment")
-            
-    except Exception as e:
-        print(f"Service test failed: {e}")
-
-
-if __name__ == "__main__":
-    test_diarization_service()

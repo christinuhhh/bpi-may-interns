@@ -1,70 +1,80 @@
-# Document Processor Backend
+---
+title: Contact Center Operations
+emoji: ⚡
+colorFrom: red
+colorTo: green
+sdk: docker
+pinned: false
+license: mit
+short_description: Contact Center Operation Insights
+---
 
-This is the FastAPI backend for the Document Processor application that uses Google's Gemini AI to extract structured information from bank documents.
+# Contact Center Operations
 
-## Setup Instructions
+A FastAPI application for contact center operation insights and analytics.
 
-### 1. Environment Variables
+## Local Development Setup
 
-To use this application, you need to set up your Gemini API key:
+Follow these steps to run the FastAPI application locally on your machine.
 
-1. **Get your Gemini API key:**
-   - Go to [Google AI Studio](https://makersuite.google.com/app/apikey)
-   - Create a new API key
-   - Copy the API key
+### Prerequisites
 
-2. **Create a `.env` file:**
+- Python 3.11
+- Git
+
+### Installation
+
+1. **Clone the repository**
    ```bash
-   # In the backend directory, create a .env file
-   cp env_template.txt .env
+   git clone 
    ```
 
-3. **Edit the `.env` file:**
+2. **Create a virtual environment**
+
+   **Option A: Using venv**
    ```bash
-   # Replace 'your_actual_api_key_here' with your real API key
-   GEMINI_API_KEY=your_actual_api_key_here
+   python3.11 -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
    ```
 
-### 2. Install Dependencies
+   **Option B: Using conda**
+   ```bash
+   conda create -n contact-center python=3.11
+   conda activate contact-center
+   ```
 
+3. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Run the application**
+   ```bash
+   python api.py
+   ```
+
+The FastAPI application will start and be available at `http://localhost:8000`.
+
+### API Documentation
+
+Once the application is running, you can access:
+- Interactive API documentation: `http://localhost:8000/docs`
+- Alternative API documentation: `http://localhost:8000/redoc`
+
+### Deactivating the Environment
+
+When you're done working with the application:
+
+**For venv:**
 ```bash
-# Create virtual environment
-python3 -m venv venv
-
-# Activate virtual environment
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
+deactivate
 ```
 
-### 3. Run the Server
-
+**For conda:**
 ```bash
-# Make sure virtual environment is activated
-source venv/bin/activate
-
-# Start the server
-uvicorn main:app --reload --host 0.0.0.0 --port 8000
+conda deactivate
 ```
 
-The server will be available at `http://localhost:8000`
+---
 
-## API Endpoints
-
-- `GET /` - Health check
-- `GET /api/health` - Detailed health check
-- `POST /api/process` - Process uploaded documents
-
-## Security Notes
-
-- The `.env` file is automatically ignored by git to prevent accidentally committing your API key
-- Never commit your actual API key to version control
-- Keep your API key secure and don't share it publicly
-
-## Troubleshooting
-
-If you get an error about `GEMINI_API_KEY not set in environment`, make sure:
-1. You've created the `.env` file in the backend directory
-2. You've added your actual API key to the file
-3. The virtual environment is activated when running the server 
+Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference

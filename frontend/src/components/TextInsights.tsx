@@ -4,13 +4,13 @@ import axios, { AxiosError } from "axios";
 // Main result interface matching your FastAPI output
 interface TextInsightResult {
   case_transaction_type: string;
-  case_priority_level: string;    // JSON string that needs parsing
+  case_priority_level: string; // JSON string that needs parsing
   case_type: string;
-  sentiment: string;              // JSON string that needs parsing
+  sentiment: string; // JSON string that needs parsing
   summary: string;
   keywords: string;
-  dialogue_history: string;       // JSON string that needs parsing
-  error?: string;                 // For error handling
+  dialogue_history: string; // JSON string that needs parsing
+  error?: string; // For error handling
 }
 
 // Parsed interfaces for the JSON strings
@@ -56,7 +56,9 @@ export default function TextInsights(): JSX.Element {
     dialogue: DialogueHistory | null;
   }>({ priority: null, sentiment: null, dialogue: null });
 
-  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>): void => {
+  const handleTextChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>
+  ): void => {
     setText(e.target.value);
     setError("");
     setResult(null);
@@ -68,7 +70,7 @@ export default function TextInsights(): JSX.Element {
       const priority = JSON.parse(result.case_priority_level) as PriorityLevel;
       const sentiment = JSON.parse(result.sentiment) as SentimentAnalysis;
       const dialogue = JSON.parse(result.dialogue_history) as DialogueHistory;
-      
+
       setParsedResult({ priority, sentiment, dialogue });
     } catch (err) {
       console.error("Error parsing JSON fields:", err);
@@ -90,7 +92,7 @@ export default function TextInsights(): JSX.Element {
 
     try {
       const res = await axios.post<TextInsightResult>(
-        "http://localhost:8000/text",
+        "https://riu-rd-contact-center-operations.hf.space/text",
         { text: text.trim() },
         {
           headers: { "Content-Type": "application/json" },
@@ -282,7 +284,13 @@ export default function TextInsights(): JSX.Element {
                 borderRadius: "8px",
               }}
             >
-              <h6 style={{ color: "#1565c0", marginBottom: "8px", fontSize: "14px" }}>
+              <h6
+                style={{
+                  color: "#1565c0",
+                  marginBottom: "8px",
+                  fontSize: "14px",
+                }}
+              >
                 Case Type
               </h6>
               <p style={{ margin: 0, fontWeight: "bold", fontSize: "16px" }}>
@@ -299,7 +307,13 @@ export default function TextInsights(): JSX.Element {
                 borderRadius: "8px",
               }}
             >
-              <h6 style={{ color: "#7b1fa2", marginBottom: "8px", fontSize: "14px" }}>
+              <h6
+                style={{
+                  color: "#7b1fa2",
+                  marginBottom: "8px",
+                  fontSize: "14px",
+                }}
+              >
                 Transaction Type
               </h6>
               <p style={{ margin: 0, fontWeight: "bold", fontSize: "16px" }}>
@@ -317,7 +331,13 @@ export default function TextInsights(): JSX.Element {
                   borderRadius: "8px",
                 }}
               >
-                <h6 style={{ color: "#f57c00", marginBottom: "8px", fontSize: "14px" }}>
+                <h6
+                  style={{
+                    color: "#f57c00",
+                    marginBottom: "8px",
+                    fontSize: "14px",
+                  }}
+                >
                   Priority Level
                 </h6>
                 <p
@@ -325,7 +345,9 @@ export default function TextInsights(): JSX.Element {
                     margin: "0 0 5px 0",
                     fontWeight: "bold",
                     fontSize: "16px",
-                    color: getPriorityColor(parsedResult.priority.priority_category),
+                    color: getPriorityColor(
+                      parsedResult.priority.priority_category
+                    ),
                   }}
                 >
                   {parsedResult.priority.priority_category}
@@ -346,7 +368,13 @@ export default function TextInsights(): JSX.Element {
                   borderRadius: "8px",
                 }}
               >
-                <h6 style={{ color: "#2e7d32", marginBottom: "8px", fontSize: "14px" }}>
+                <h6
+                  style={{
+                    color: "#2e7d32",
+                    marginBottom: "8px",
+                    fontSize: "14px",
+                  }}
+                >
                   Sentiment
                 </h6>
                 <p
@@ -354,7 +382,9 @@ export default function TextInsights(): JSX.Element {
                     margin: "0 0 5px 0",
                     fontWeight: "bold",
                     fontSize: "16px",
-                    color: getSentimentColor(parsedResult.sentiment.sentiment_category),
+                    color: getSentimentColor(
+                      parsedResult.sentiment.sentiment_category
+                    ),
                   }}
                 >
                   {parsedResult.sentiment.sentiment_category}
@@ -424,71 +454,75 @@ export default function TextInsights(): JSX.Element {
               <h5 style={{ color: "#333", marginBottom: "15px" }}>
                 Sentiment Distribution
               </h5>
-              {parsedResult.sentiment.sentiment_distribution.map((item, index) => (
-                <div
-                  key={index}
-                  style={{
-                    marginBottom: "10px",
-                    padding: "10px",
-                    backgroundColor: "white",
-                    border: "1px solid #dee2e6",
-                    borderRadius: "6px",
-                  }}
-                >
+              {parsedResult.sentiment.sentiment_distribution.map(
+                (item, index) => (
                   <div
+                    key={index}
                     style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      marginBottom: "5px",
-                    }}
-                  >
-                    <span
-                      style={{
-                        fontWeight: "bold",
-                        color: getSentimentColor(item.sentiment_tag),
-                      }}
-                    >
-                      {item.sentiment_tag}
-                    </span>
-                    <span
-                      style={{
-                        fontSize: "14px",
-                        fontWeight: "bold",
-                        color: getSentimentColor(item.sentiment_tag),
-                      }}
-                    >
-                      {(item.sentiment_confidence_score * 100).toFixed(1)}%
-                    </span>
-                  </div>
-                  <div
-                    style={{
-                      width: "100%",
-                      height: "6px",
-                      backgroundColor: "#e9ecef",
-                      borderRadius: "3px",
-                      overflow: "hidden",
+                      marginBottom: "10px",
+                      padding: "10px",
+                      backgroundColor: "white",
+                      border: "1px solid #dee2e6",
+                      borderRadius: "6px",
                     }}
                   >
                     <div
                       style={{
-                        width: `${item.sentiment_confidence_score * 100}%`,
-                        height: "100%",
-                        backgroundColor: getSentimentColor(item.sentiment_tag),
-                        borderRadius: "3px",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        marginBottom: "5px",
                       }}
-                    />
-                  </div>
-                  {item.emotional_indicators.length > 0 && 
-                   item.emotional_indicators[0] !== "blank" && (
-                    <div style={{ marginTop: "8px" }}>
-                      <span style={{ fontSize: "12px", color: "#666" }}>
-                        Indicators: {item.emotional_indicators.join(", ")}
+                    >
+                      <span
+                        style={{
+                          fontWeight: "bold",
+                          color: getSentimentColor(item.sentiment_tag),
+                        }}
+                      >
+                        {item.sentiment_tag}
+                      </span>
+                      <span
+                        style={{
+                          fontSize: "14px",
+                          fontWeight: "bold",
+                          color: getSentimentColor(item.sentiment_tag),
+                        }}
+                      >
+                        {(item.sentiment_confidence_score * 100).toFixed(1)}%
                       </span>
                     </div>
-                  )}
-                </div>
-              ))}
+                    <div
+                      style={{
+                        width: "100%",
+                        height: "6px",
+                        backgroundColor: "#e9ecef",
+                        borderRadius: "3px",
+                        overflow: "hidden",
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: `${item.sentiment_confidence_score * 100}%`,
+                          height: "100%",
+                          backgroundColor: getSentimentColor(
+                            item.sentiment_tag
+                          ),
+                          borderRadius: "3px",
+                        }}
+                      />
+                    </div>
+                    {item.emotional_indicators.length > 0 &&
+                      item.emotional_indicators[0] !== "blank" && (
+                        <div style={{ marginTop: "8px" }}>
+                          <span style={{ fontSize: "12px", color: "#666" }}>
+                            Indicators: {item.emotional_indicators.join(", ")}
+                          </span>
+                        </div>
+                      )}
+                  </div>
+                )
+              )}
             </div>
           )}
 
@@ -599,11 +633,14 @@ export default function TextInsights(): JSX.Element {
           color: "#004085",
         }}
       >
-        <strong>Supported inputs:</strong> Customer conversations, support tickets, feedback, or any text
+        <strong>Supported inputs:</strong> Customer conversations, support
+        tickets, feedback, or any text
         <br />
-        <strong>Analysis features:</strong> Sentiment analysis, case categorization, priority assessment
+        <strong>Analysis features:</strong> Sentiment analysis, case
+        categorization, priority assessment
         <br />
-        <strong>Best results:</strong> Customer service interactions and structured conversations
+        <strong>Best results:</strong> Customer service interactions and
+        structured conversations
         <br />
         <strong>Processing time:</strong> Usually completes within 10-30 seconds
       </div>

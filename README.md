@@ -156,7 +156,7 @@ npm run dev
 ```
 
 The frontend will be available at:
-- **Application**: http://localhost:3000
+- **Application**: http://localhost:5173
 
 ## 🎯 Usage Guide
 

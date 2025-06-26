@@ -79,8 +79,8 @@ brew install ffmpeg
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/contact-center-insights.git
-cd contact-center-insights
+git clone https://github.com/yourusername/bpi-may-interns.git # In this case, the username is 'christinuhhh'
+cd bpi-may-interns
 ```
 
 ### 2. Backend Setup (FastAPI)
@@ -116,7 +116,10 @@ pip install -r requirements.txt
 
 1. Copy the example environment file:
 ```bash
+# MacOS
 cp .env.example .env
+# Windows OS
+copy .env.example .env
 ```
 
 2. Edit `.env` and add your API key:

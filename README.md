@@ -1,6 +1,6 @@
 # Contact Center Operation Insights
 
-A comprehensive full-stack application that provides AI-powered insights for contact center operations. Extract structured information from documents, transcribe and analyze audio conversations, and perform speaker diarization using cutting-edge AI models.
+A comprehensive full-stack application that provides AI-powered insights for contact center operations. Extract structured information from documents, transcribe and analyze audio conversations, and perform speaker diarization using cutting-edge AI models
 
 ## 🚀 Features
 

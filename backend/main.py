@@ -1,57 +1,39 @@
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from ocr_processor import process_document_image
+from fastapi.responses import RedirectResponse
 import uvicorn
-import io
-from PIL import Image
-import PyPDF2
-from pdf2image import convert_from_bytes
 
-app = FastAPI(title="Document Processor API", version="1.0.0")
+from services.ocr_processor import process_pdf_to_image, process_document_image
+
+app = FastAPI(
+    title="Contact Center Operation Insights", 
+    version="1.0.0"
+)
 
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # React dev server
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-def process_pdf_to_image(pdf_bytes):
-    """
-    Convert PDF to image for processing
-    """
-    try:
-        # Convert PDF to images (first page only)
-        images = convert_from_bytes(pdf_bytes, first_page=1, last_page=1)
-        if not images:
-            raise Exception("Could not convert PDF to image")
-        
-        # Convert PIL image to bytes
-        img_byte_arr = io.BytesIO()
-        images[0].save(img_byte_arr, format='PNG')
-        img_byte_arr = img_byte_arr.getvalue()
-        
-        return img_byte_arr
-    except Exception as e:
-        raise Exception(f"PDF processing failed: {str(e)}")
-
 @app.get("/")
-async def root():
-    return {"message": "Document Processor API is running"}
+async def docs():
+    return RedirectResponse(url="/docs")
 
-@app.post("/api/process")
+@app.post("/image/process-document")
 async def process_document(document: UploadFile = File(...)):
     """
-    Process uploaded document (image or PDF) and extract information
+    Process uploaded document (image or PDF) and extract information [Model: Gemini 1.5 Flash]
     """
     try:
         # Read file content
         file_bytes = await document.read()
         
         # Handle different file types
-        if document.content_type.startswith('image/'):
+        if document.content_type.startswith('image/'): # type: ignore
             # Process image directly
             image_bytes = file_bytes
         elif document.content_type == 'application/pdf':
@@ -71,10 +53,16 @@ async def process_document(document: UploadFile = File(...)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Processing failed: {str(e)}")
 
-@app.get("/api/health")
+@app.get("/health")
 async def health_check():
     """Health check endpoint"""
     return {"status": "healthy", "service": "document-processor"}
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000) 
+    uvicorn.run(
+        "main:app",
+        host="0.0.0.0",
+        port=8000,
+        reload=True,            
+        reload_dirs=["."]       
+    )

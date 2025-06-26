@@ -10,7 +10,6 @@ load_dotenv()
 
 # --- Configuration ---
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-# As per the notebook.ipynb, using the specified model name.
 MODEL_ID = "gemini-2.5-pro"
 
 # --- Client Initialization ---

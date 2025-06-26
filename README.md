@@ -1,217 +1,330 @@
-# Document Processor - Image to Insights OCR
+# Contact Center Operation Insights
 
-A powerful document processing application that uses Google's Gemini AI to extract structured information from bank documents and other forms. The application provides both a modern web interface and a robust API backend.
+A comprehensive full-stack application that provides AI-powered insights for contact center operations. Extract structured information from documents, transcribe and analyze audio conversations, and perform speaker diarization using cutting-edge AI models.
 
-## Features
+## 🚀 Features
 
-- **Advanced OCR**: Uses Google Gemini 1.5 Flash for high-accuracy text extraction
-- **Document Classification**: Automatically identifies document types (deposit slips, withdrawal slips, customer info sheets)
-- **Structured Data Extraction**: Converts unstructured documents into structured JSON data
-- **Quality Metrics**: Provides spelling error rate, perplexity, and character error rate
-- **Modern UI**: Beautiful, responsive React frontend with drag-and-drop file upload
-- **RESTful API**: FastAPI backend with comprehensive error handling
+### Document Processing
+- **Advanced OCR**: Extract text and structured data from bank forms and documents
+- **Document Classification**: Automatically identify document types (deposit slips, withdrawal forms, customer information sheets)
+- **Quality Metrics**: Get accuracy scores including spelling error rates and character error rates
+- **Multiple Formats**: Support for images (JPG, PNG, GIF, BMP, TIFF) and PDF files
 
-## Supported Document Types
+### Audio Processing
+- **Whisper Transcription**: High-accuracy speech-to-text using OpenAI's Whisper model
+- **Gemini Audio Processing**: Advanced transcription and translation using Google Gemini 2.5 Pro
+- **Speaker Diarization**: Identify different speakers and analyze conversations
+- **Multiple Audio Formats**: Support for WAV, MP3, MP4, M4A, FLAC
 
-- **Deposit Slip Front**: Account details, amounts, dates
-- **Deposit Slip Back**: Cash breakdowns, endorsements
-- **Withdrawal Slip Front**: Account holder information, signatures
-- **Withdrawal Slip Back**: Transaction breakdowns, denominations
-- **Customer Information Sheet**: Personal details, contact information, financial data
+### Modern Web Interface
+- **Responsive Design**: Beautiful, intuitive React interface
+- **Drag & Drop**: Easy file uploads with visual feedback
+- **Real-time Preview**: Audio playback controls and image zoom functionality
+- **Tabbed Interface**: Organized features across multiple tabs
 
-## Project Structure
+## 🏗️ Architecture
 
 ```
-doc-processor/
-├── backend/
-│   ├── main.py              # FastAPI server
-│   ├── ocr_processor.py     # Core OCR processing logic
-│   ├── requirements.txt     # Python dependencies
-│   └── start_server.py      # Server startup script
-├── frontend/
+contact-center-insights/
+├── backend/                 # FastAPI Server
+│   ├── api.py              # Main FastAPI application
+│   ├── services/           # Processing services
+│   │   ├── audio_whisper.py
+│   │   ├── audio_gemini.py
+│   │   ├── audio_diarization.py
+│   │   └── image_ocr_processor.py
+│   ├── requirements.txt    # Python dependencies
+│   ├── Dockerfile         # Docker configuration
+│   └── .env.example       # Environment template
+├── frontend/               # React Vite Application
 │   ├── src/
-│   │   ├── components/
-│   │   │   ├── FileUpload.js    # File upload component
-│   │   │   └── ResultDisplay.js # Results display component
-│   │   └── App.js              # Main React app
-│   └── package.json
-└── README.md
+│   │   ├── components/    # React components
+│   │   ├── App.tsx        # Main application
+│   │   └── main.tsx       # Entry point
+│   ├── package.json       # Node.js dependencies
+│   └── vite.config.ts     # Vite configuration
+└── README.md              # This file
 ```
 
-## Setup Instructions
+## 📋 Prerequisites
 
-### Prerequisites
+### System Requirements
+- **Python**: 3.11 or higher
+- **Node.js**: 16.0 or higher
+- **FFmpeg**: Required for audio processing
 
-- Python 3.8+
-- Node.js 16+
-- Google Gemini API key
+### API Keys
+- **Google Gemini API Key**: Required for document OCR and audio processing
+  - Get your key from [Google AI Studio](https://makersuite.google.com/app/apikey)
 
-### Backend Setup
+### Installing FFmpeg
 
-1. **Navigate to backend directory:**
-   ```bash
-   cd backend
-   ```
-
-2. **Create virtual environment:**
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-3. **Install dependencies:**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. **Set up environment variables:**
-   Create a `.env` file in the backend directory:
-   ```bash
-   GEMINI_API_KEY=your_gemini_api_key_here
-   PORT=8000
-   ```
-
-5. **Start the backend server:**
-   ```bash
-   python start_server.py
-   ```
-
-   The API will be available at:
-   - Main API: http://localhost:8000
-   - Documentation: http://localhost:8000/docs
-   - Health Check: http://localhost:8000/api/health
-
-### Frontend Setup
-
-1. **Navigate to frontend directory:**
-   ```bash
-   cd frontend
-   ```
-
-2. **Install dependencies:**
-   ```bash
-   npm install
-   ```
-
-3. **Start the development server:**
-   ```bash
-   npm start
-   ```
-
-   The frontend will be available at: http://localhost:3000
-
-## Usage
-
-### Web Interface
-
-1. Open http://localhost:3000 in your browser
-2. Drag and drop or click to upload a document image
-3. Wait for processing (usually 10-30 seconds)
-4. View extracted data and quality metrics
-
-### API Usage
-
-**Upload and process a document:**
+**Ubuntu/Debian:**
 ```bash
-curl -X POST "http://localhost:8000/api/process" \
-  -H "Content-Type: multipart/form-data" \
-  -F "document=@your_document.png"
+sudo apt-get update
+sudo apt-get install ffmpeg
 ```
 
-**Response format:**
-```json
-{
-  "document_type": "customer information sheet",
-  "extracted": {
-    "document_type": "Customer Information Sheet",
-    "personal_information": {
-      "last_name": "SANTIAGO",
-      "first_name": "Kelsey",
-      "middle_name": "Santos"
-    }
-  },
-  "metrics": {
-    "ser": 0.05,
-    "ppl": 2.34,
-    "refined_ser": 0.03,
-    "cer": 0.02
-  },
-  "raw_text": "..."
-}
+**macOS:**
+```bash
+brew install ffmpeg
 ```
 
-## API Endpoints
+**Windows:**
+1. Download from [FFmpeg official site](https://ffmpeg.org/download.html)
+2. Extract and add to your system PATH
 
-- `GET /` - API status
-- `GET /api/health` - Health check
-- `POST /api/process` - Process document image
-- `GET /docs` - Interactive API documentation
+## 🛠️ Installation & Setup
 
-## Error Handling
+### 1. Clone the Repository
 
-The application includes comprehensive error handling:
+```bash
+git clone https://github.com/yourusername/contact-center-insights.git
+cd contact-center-insights
+```
 
-- **File validation**: Ensures uploaded files are images
-- **API error handling**: Graceful handling of Gemini API errors
-- **Network error handling**: Clear messages for connection issues
-- **Processing timeouts**: 60-second timeout for processing
+### 2. Backend Setup (FastAPI)
 
-## Development
+#### Create Virtual Environment
+
+**Option A: Using venv**
+```bash
+cd backend
+python3.11 -m venv venv
+
+# Activate virtual environment
+# On macOS/Linux:
+source venv/bin/activate
+# On Windows:
+venv\Scripts\activate
+```
+
+**Option B: Using conda**
+```bash
+cd backend
+conda create -n contact-center python=3.11
+conda activate contact-center
+```
+
+#### Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+#### Configure Environment Variables
+
+1. Copy the example environment file:
+```bash
+cp .env.example .env
+```
+
+2. Edit `.env` and add your API key:
+```bash
+GEMINI_API_KEY=your_actual_api_key_here
+```
+
+#### Start the Backend Server
+
+```bash
+python api.py
+```
+
+The backend will be available at:
+- **API**: http://localhost:8000
+- **Documentation**: http://localhost:8000/docs
+- **Health Check**: http://localhost:8000/health
+
+### 3. Frontend Setup (React + Vite)
+
+#### Open New Terminal
+
+```bash
+cd frontend
+```
+
+#### Install Dependencies
+
+```bash
+npm install
+```
+
+#### Start Development Server
+
+```bash
+npm run dev
+```
+
+The frontend will be available at:
+- **Application**: http://localhost:3000
+
+## 🎯 Usage Guide
+
+### Document Processing
+
+1. **Navigate** to the "Image to Insights" tab
+2. **Upload** a document by:
+   - Dragging and dropping a file
+   - Clicking to browse and select
+3. **Preview** your image with zoom controls
+4. **Click** "Analyze Document" to process
+5. **View** extracted data and quality metrics
+
+**Supported Document Types:**
+- Customer Information Sheets
+- Deposit/Payment Slips (Front & Back)
+- Withdrawal Slips (Front & Back)
+
+### Audio Processing
+
+#### Whisper Transcription
+1. **Navigate** to "Audio to Insights" → "Whisper Transcription"
+2. **Upload** an audio file
+3. **Preview** with built-in audio player
+4. **Process** to get transcription and translation
+
+#### Gemini Processing
+1. **Navigate** to "Audio to Insights" → "Gemini Processing"
+2. **Upload** an audio file
+3. **Process** for advanced AI transcription and translation
+
+#### Speaker Diarization
+1. **Navigate** to "Audio to Insights" → "Speaker Diarization"
+2. **Upload** a conversation audio file
+3. **Analyze** to identify different speakers
+4. **View** color-coded speaker segments
+
+## 🔧 Development
 
 ### Backend Development
 
-- The backend uses FastAPI with automatic reload
-- API documentation is auto-generated at `/docs`
-- CORS is configured for local development
+The FastAPI server includes:
+- **Auto-reload**: Changes are automatically detected
+- **Interactive docs**: Available at `/docs`
+- **CORS**: Configured for local development
+
+**Key endpoints:**
+- `POST /image/process-document` - Document OCR processing
+- `POST /audio/whisper` - Whisper transcription
+- `POST /audio/gemini` - Gemini audio processing
+- `POST /audio/diarization` - Speaker diarization
 
 ### Frontend Development
 
-- React with modern hooks and functional components
-- Responsive design with CSS-in-JS styling
-- Drag-and-drop file upload with visual feedback
+The React application features:
+- **Hot reload**: Instant updates during development
+- **TypeScript**: Full type safety
+- **Modern React**: Hooks and functional components
+- **Responsive design**: Works on all screen sizes
 
-## Troubleshooting
+### Running Tests
+
+**Backend:**
+```bash
+cd backend
+python -m pytest tests/
+```
+
+**Frontend:**
+```bash
+cd frontend
+npm test
+```
+
+## 📦 Production Deployment
+
+### Using Docker (Backend)
+
+```bash
+cd backend
+docker build -t contact-center-backend .
+docker run -p 8000:7860 -e GEMINI_API_KEY=your_key contact-center-backend
+```
+
+### Building Frontend for Production
+
+```bash
+cd frontend
+npm run build
+```
+
+The built files will be in the `dist/` directory.
+
+## 🚨 Troubleshooting
 
 ### Common Issues
 
-1. **"Network error: Unable to connect to server"**
-   - Ensure the backend server is running on port 8000
-   - Check if the port is not blocked by firewall
+**Backend won't start:**
+- ✅ Check Python version: `python --version`
+- ✅ Verify FFmpeg installation: `ffmpeg -version`
+- ✅ Confirm virtual environment is activated
+- ✅ Check if port 8000 is available
 
-2. **"Server error: Processing failed"**
-   - Verify your Gemini API key is valid
-   - Check the backend logs for detailed error messages
+**Frontend connection errors:**
+- ✅ Ensure backend is running on port 8000
+- ✅ Check browser console for CORS errors
+- ✅ Verify API endpoints in component files
 
-3. **"File must be an image"**
-   - Ensure you're uploading an image file (JPG, PNG, etc.)
-   - Check file extension and content type
+**API Key issues:**
+- ✅ Confirm `.env` file exists in backend directory
+- ✅ Check API key format and validity
+- ✅ Restart backend after changing environment variables
 
-4. **Slow processing**
-   - Large images may take longer to process
-   - Consider resizing images before upload
+**Audio processing errors:**
+- ✅ Verify FFmpeg is properly installed
+- ✅ Check audio file format and size limits
+- ✅ Ensure sufficient system memory
 
-### Logs
+### File Size Limits
 
-Backend logs are displayed in the terminal where you started the server. Look for:
-- Processing status messages
-- Error details
-- API response information
+- **Images**: 10MB maximum
+- **Audio**: 100MB maximum
+- **Processing time**: Up to 3 minutes for complex audio
 
-## Contributing
+### Performance Tips
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+- **Images**: Use compressed formats (JPEG) for faster processing
+- **Audio**: WAV format provides best diarization results
+- **Large files**: Consider splitting long audio into segments
 
-## License
+## 🤝 Contributing
 
-This project is licensed under the MIT License.
+1. **Fork** the repository
+2. **Create** a feature branch: `git checkout -b feature-name`
+3. **Commit** your changes: `git commit -am 'Add feature'`
+4. **Push** to the branch: `git push origin feature-name`
+5. **Submit** a pull request
 
-## Support
+### Development Guidelines
+
+- Follow TypeScript best practices for frontend
+- Use type hints and docstrings for Python backend
+- Add tests for new features
+- Update documentation for API changes
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🆘 Support
 
 For issues and questions:
-1. Check the troubleshooting section
-2. Review the API documentation at `/docs`
-3. Check the backend logs for error details 
+
+1. **Check** the troubleshooting section above
+2. **Review** API documentation at http://localhost:8000/docs
+3. **Examine** backend logs in your terminal
+4. **Open** an issue on GitHub with:
+   - Operating system and versions
+   - Error messages and logs
+   - Steps to reproduce the problem
+
+## 🙏 Acknowledgments
+
+- **OpenAI Whisper** for speech recognition
+- **Google Gemini** for advanced AI processing
+- **FastAPI** for the robust backend framework
+- **React + Vite** for the modern frontend experience
+
+---
+
+**Happy Processing! 🎉**

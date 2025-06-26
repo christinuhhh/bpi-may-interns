@@ -13,6 +13,10 @@ short_description: Contact Center Operation Insights
 
 A FastAPI application for contact center operation insights and analytics.
 
+## System Requirements
+
+This application requires FFmpeg for audio processing capabilities.
+
 ## Local Development Setup
 
 Follow these steps to run the FastAPI application locally on your machine.
@@ -21,6 +25,23 @@ Follow these steps to run the FastAPI application locally on your machine.
 
 - Python 3.11
 - Git
+- FFmpeg (for audio processing)
+
+### Installing FFmpeg
+
+**On Ubuntu/Debian:**
+```bash
+sudo apt-get update
+sudo apt-get install ffmpeg
+```
+
+**On macOS:**
+```bash
+brew install ffmpeg
+```
+
+**On Windows:**
+Download from [FFmpeg official site](https://ffmpeg.org/download.html) and add to PATH.
 
 ### Installation
 
@@ -48,7 +69,13 @@ Follow these steps to run the FastAPI application locally on your machine.
    pip install -r requirements.txt
    ```
 
-4. **Run the application**
+4. **Set up environment variables**
+   Create a `.env` file in the backend directory:
+   ```bash
+   GEMINI_API_KEY=your_api_key_here
+   ```
+
+5. **Run the application**
    ```bash
    python api.py
    ```

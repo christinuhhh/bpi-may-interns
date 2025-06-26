@@ -21,6 +21,8 @@ export default function FileUpload({ onResult }: FileUploadProps): JSX.Element {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
   const [dragActive, setDragActive] = useState<boolean>(false);
+  const [imageUrl, setImageUrl] = useState<string>("");
+  const [imageZoom, setImageZoom] = useState<number>(1);
 
   const handleDrag = (e: React.DragEvent<HTMLDivElement>): void => {
     e.preventDefault();
@@ -38,15 +40,35 @@ export default function FileUpload({ onResult }: FileUploadProps): JSX.Element {
     setDragActive(false);
 
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      setFile(e.dataTransfer.files[0]);
+      const selectedFile = e.dataTransfer.files[0];
+      setFile(selectedFile);
       setError("");
+
+      // Create preview for images
+      if (selectedFile.type.startsWith("image/")) {
+        const url = URL.createObjectURL(selectedFile);
+        setImageUrl(url);
+      } else {
+        setImageUrl("");
+      }
+      setImageZoom(1);
     }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
+      const selectedFile = e.target.files[0];
+      setFile(selectedFile);
       setError("");
+
+      // Create preview for images
+      if (selectedFile.type.startsWith("image/")) {
+        const url = URL.createObjectURL(selectedFile);
+        setImageUrl(url);
+      } else {
+        setImageUrl("");
+      }
+      setImageZoom(1);
     }
   };
 
@@ -95,6 +117,18 @@ export default function FileUpload({ onResult }: FileUploadProps): JSX.Element {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleZoomIn = () => {
+    setImageZoom((prev) => Math.min(prev + 0.25, 3));
+  };
+
+  const handleZoomOut = () => {
+    setImageZoom((prev) => Math.max(prev - 0.25, 0.25));
+  };
+
+  const resetZoom = () => {
+    setImageZoom(1);
   };
 
   return (
@@ -162,6 +196,127 @@ export default function FileUpload({ onResult }: FileUploadProps): JSX.Element {
             </div>
           )}
         </div>
+
+        {/* Image Preview Section */}
+        {imageUrl && (
+          <div
+            style={{
+              marginBottom: "20px",
+              border: "1px solid #dee2e6",
+              borderRadius: "8px",
+              padding: "15px",
+              backgroundColor: "#f8f9fa",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "10px",
+              }}
+            >
+              <h4 style={{ margin: 0, color: "#333" }}>Image Preview</h4>
+              <div style={{ display: "flex", gap: "10px" }}>
+                <button
+                  type="button"
+                  onClick={handleZoomOut}
+                  style={{
+                    backgroundColor: "#6c757d",
+                    color: "white",
+                    border: "none",
+                    padding: "5px 10px",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                    fontSize: "14px",
+                  }}
+                >
+                  Zoom Out
+                </button>
+                <button
+                  type="button"
+                  onClick={resetZoom}
+                  style={{
+                    backgroundColor: "#6c757d",
+                    color: "white",
+                    border: "none",
+                    padding: "5px 10px",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                    fontSize: "14px",
+                  }}
+                >
+                  Reset
+                </button>
+                <button
+                  type="button"
+                  onClick={handleZoomIn}
+                  style={{
+                    backgroundColor: "#6c757d",
+                    color: "white",
+                    border: "none",
+                    padding: "5px 10px",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                    fontSize: "14px",
+                  }}
+                >
+                  Zoom In
+                </button>
+              </div>
+            </div>
+            <div
+              style={{
+                maxHeight: "400px",
+                overflow: "auto",
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+                textAlign: "center",
+                backgroundColor: "white",
+              }}
+            >
+              <img
+                src={imageUrl}
+                alt="Preview"
+                style={{
+                  maxWidth: "100%",
+                  height: "auto",
+                  transform: `scale(${imageZoom})`,
+                  transition: "transform 0.2s ease",
+                  transformOrigin: "center center",
+                }}
+              />
+            </div>
+            <p
+              style={{
+                margin: "10px 0 0 0",
+                fontSize: "12px",
+                color: "#666",
+                textAlign: "center",
+              }}
+            >
+              Zoom: {Math.round(imageZoom * 100)}%
+            </p>
+          </div>
+        )}
+
+        {/* PDF Preview Message */}
+        {file && file.type === "application/pdf" && (
+          <div
+            style={{
+              marginBottom: "20px",
+              padding: "15px",
+              backgroundColor: "#e3f2fd",
+              border: "1px solid #bbdefb",
+              borderRadius: "8px",
+              color: "#1565c0",
+            }}
+          >
+            <strong>PDF File Selected:</strong> {file.name}
+            <br />
+            <small>PDF preview will be available after processing</small>
+          </div>
+        )}
 
         <button
           type="submit"

@@ -9,6 +9,7 @@ from services.audio_whisper import process_audio_with_whisper
 from services.audio_gemini import process_audio_with_gemini
 from services.audio_diarization import process_audio_diarization, AudioDiarizationError
 from services.image_ocr_processor import process_pdf_to_image, process_document_image
+from services.text_processor import process_text_to_insight
 
 class TextRequest(BaseModel):
     text: str
@@ -198,11 +199,12 @@ async def process_document(document: UploadFile = File(...)):
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Processing failed: {str(e)}")
-    
-@app.post("/text", response_model=HelloWorldResponse)
-async def text_insights(request: TextRequest) -> HelloWorldResponse:
+
+
+@app.post("/text", response_model= Dict[str, str])
+async def text_insights(request: TextRequest):
     """
-    Simple text to insights endpoint
+    Input text and extract insights
     """
     try:
         # Basic validation
@@ -212,13 +214,10 @@ async def text_insights(request: TextRequest) -> HelloWorldResponse:
                 detail="Text cannot be empty or contain only whitespace."
             )
         
-        response = HelloWorldResponse(
-            message="Hello World! Text processing completed successfully.",
-            received_text=request.text,
-            status="success"
-        )
+        # Process text
+        result = process_text_to_insight(request)
         
-        return response
+        return result
         
     except HTTPException:
         raise

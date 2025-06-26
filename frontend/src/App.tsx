@@ -2,6 +2,7 @@ import React, { useState, type JSX } from "react";
 import FileUpload from "./components/FileUpload";
 import ResultDisplay from "./components/ResultDisplay";
 import AudioInsights from "./components/AudioInsights";
+import TextInsights from "./components/TextInsights";
 import "./App.css";
 
 interface MenuItem {
@@ -69,12 +70,7 @@ function App(): JSX.Element {
             <ResultDisplay data={result} />
           </>
         )}
-        {view === "text" && (
-          <div>
-            <h2>Text to Insights</h2>
-            <p>Upload or paste text to generate insights.</p>
-          </div>
-        )}
+        {view === "text" && <TextInsights />}
         {view === "audio" && <AudioInsights />}
       </main>
     </div>

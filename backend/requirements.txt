@@ -24,3 +24,5 @@ librosa
 soundfile
 openai-whisper
 pydantic
+langchain-google-genai
+langchain

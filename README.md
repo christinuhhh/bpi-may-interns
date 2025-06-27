@@ -164,7 +164,7 @@ The frontend will be available at:
 - **Application**: http://localhost:5173
 
 ### Vercel link
-- Alternatively, you may access the deployed version of this web app through [https://contact-center-insights.vercel.app/](url)
+- Alternatively, you may access the deployed version of this web app through https://contact-center-insights.vercel.app/ (please copy-paste this. hyperlink not working)
 
 ## 🎯 Usage Guide
 

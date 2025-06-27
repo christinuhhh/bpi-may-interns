@@ -1,4 +1,4 @@
-import React, { useState, type JSX } from "react";
+import { useState, type JSX } from "react";
 import AudioWhisper from "./AudioWhisper";
 import AudioGemini from "./AudioGemini";
 import AudioDiarization from "./AudioDiarization";

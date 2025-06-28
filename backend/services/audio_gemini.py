@@ -4,6 +4,13 @@ from typing import Dict
 import google.genai as genai
 from dotenv import load_dotenv
 from google.genai.types import Part
+from pydantic import BaseModel
+
+from services.text_processor import process_text_to_insight
+
+# Add the TextRequest model definition here or import it
+class TextRequest(BaseModel):
+    text: str
 
 # Load environment variables from a .env file in the root directory
 load_dotenv()
@@ -59,7 +66,7 @@ def _translate_to_english(text: str) -> str:
     return resp.text.strip() # type: ignore
 
 
-def process_audio_with_gemini(audio_bytes: bytes) -> Dict[str, str]:
+def process_audio_with_gemini(audio_bytes: bytes) -> Dict[str, any]:
     """
     Processes an audio file by first transcribing it and then translating the
     resulting text to English using the Gemini model.
@@ -84,8 +91,12 @@ def process_audio_with_gemini(audio_bytes: bytes) -> Dict[str, str]:
         translation = ""
         if transcription:
             translation = _translate_to_english(transcription)
-
-        return {"transcription": transcription, "translation": translation}
+        
+        # Step 3: Generate insights using TextRequest object
+        text_request = TextRequest(text=transcription)
+        audio_text_insights = process_text_to_insight(text_request)
+        
+        return {"transcription": transcription, "translation": translation, "insights": audio_text_insights}
     except Exception as e:
         # Re-raise the exception with more context to be caught by the API endpoint
         raise Exception(f"Error processing audio with Gemini: {str(e)}")

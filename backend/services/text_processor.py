@@ -10,6 +10,7 @@ from langchain.output_parsers import OutputFixingParser
 from langchain.prompts import PromptTemplate, FewShotPromptTemplate
 from datetime import datetime
 import time
+from tqdm import tqdm
 
 
 import os

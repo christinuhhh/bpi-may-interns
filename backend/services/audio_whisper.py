@@ -3,6 +3,12 @@ import torch
 import tempfile
 import os
 from typing import Dict
+from services.text_processor import process_text_to_insight
+from pydantic import BaseModel
+
+# Add the TextRequest model definition here or import it
+class TextRequest(BaseModel):
+    text: str
 
 # Determine the most efficient device available (CUDA if possible, otherwise CPU)
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
@@ -17,7 +23,7 @@ except Exception as e:
     print(f"Fatal: Error loading Whisper model: {e}")
     model = None
 
-def process_audio_with_whisper(audio_bytes: bytes) -> Dict[str, str]:
+def process_audio_with_whisper(audio_bytes: bytes):
     """
     Transcribes and translates a given audio file's bytes using the Whisper model.
 
@@ -30,7 +36,7 @@ def process_audio_with_whisper(audio_bytes: bytes) -> Dict[str, str]:
 
     Returns:
         A dictionary containing the Tagalog transcription and English translation.
-        Example: {"transcription": "...", "translation": "..."}
+        Example: {"transcription": "...", "translation": "...", "insights": "..."}
 
     Raises:
         ValueError: If the Whisper model was not loaded successfully.
@@ -67,10 +73,18 @@ def process_audio_with_whisper(audio_bytes: bytes) -> Dict[str, str]:
             task="translate"
         )
 
+        # Get the transcribed text
+        transcribed_text = transcription_result.get('text', '').strip()
+        
+        insights = process_text_to_insight(transcribed_text)
+
+
         return {
-            "transcription": transcription_result.get('text', '').strip(), # type: ignore
-            "translation": translation_result.get('text', '').strip() # type: ignore
+            "transcription": transcribed_text,
+            "translation": translation_result.get('text', '').strip(),
+            "insights": insights
         }
+    
     except Exception as e:
         # Log and re-raise any exceptions to be handled by the FastAPI endpoint
         print(f"An error occurred during Whisper processing: {e}")
@@ -79,3 +93,5 @@ def process_audio_with_whisper(audio_bytes: bytes) -> Dict[str, str]:
         # Ensure the temporary file is deleted after processing
         if 'temp_path' in locals() and os.path.exists(temp_path):
             os.remove(temp_path)
+
+            print("=== Debug Whisper Output ===")

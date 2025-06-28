@@ -38,7 +38,7 @@ app.add_middleware(
 async def docs():
     return RedirectResponse(url="/docs")
 
-@app.post("/audio/whisper", response_model=Dict[str, str])
+@app.post("/audio/whisper", response_model=Dict[str, Any])
 async def audio_whisper(audio: UploadFile = File(...)):
     """
     Transcribes and translates an audio file using OpenAI's Whisper model.
@@ -64,7 +64,7 @@ async def audio_whisper(audio: UploadFile = File(...)):
         # Catch exceptions from the audio processing service or file reading
         raise HTTPException(status_code=500, detail=f"Audio processing failed: {str(e)}")
     
-@app.post("/audio/gemini", response_model=Dict[str, str])
+@app.post("/audio/gemini", response_model=Dict[str, Any])
 async def audio_gemini(audio: UploadFile = File(...)):
     """
     Receives an audio file, transcribes it, and translates the transcription

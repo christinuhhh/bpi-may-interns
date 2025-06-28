@@ -26,3 +26,4 @@ openai-whisper
 pydantic
 langchain-google-genai
 langchain
+tqdm

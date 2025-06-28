@@ -15,7 +15,6 @@ from tqdm import tqdm
 
 import os
 from dotenv import load_dotenv
-import tqdm
 
 # Load environment variables from a .env file in the root directory
 load_dotenv()
@@ -141,39 +140,39 @@ sentiment_examples = [{'input': 'There is an unauthorized charge on my BPI Famil
 # --- Pydantic Models
 class GeneralInfo(BaseModel):
   case_id: Optional[str] = Field(None, description="An unique identifier given to each case message")
-  raw_message: str = Field(None, description="The raw and unstructured form of the original message or conversation") # type: ignore
-  message_source: Literal['Email', 'Phone', 'Branch', 'Facebook'] = Field(None, description="The channel to which the text was received from") # type: ignore
+  raw_message: str = Field(None, description="The raw and unstructured form of the original message or conversation")
+  message_source: Literal['Email', 'Phone', 'Branch', 'Facebook'] = Field(None, description="The channel to which the text was received from")
   customer_tier: Optional[Literal['High', 'Mid', 'Low']] = Field(None, description="The tier of the customer sending the message")
   status: Optional[Literal['New', 'Assigned', 'Closed']] = Field(None, description="The status of the message, whether it was new, already assigned, or closed")
   start_date: Optional[datetime] = Field(None, description="The date and time when the message was initiated or received.")
   close_date: Optional[datetime] = Field(None, description="The date and time when the message was marked as closed or resolved.")
 
 class TextOverview(BaseModel):
-  summary: str = Field(None, description="A one liner summary of the text provided. Indicates the main purpose and intention of the text. Use proper case.") # type: ignore
-  tags: List[str] = Field(None, description="A list of keywords that can be used to tag and classify the message meaningfuly. Use lowercase") # type: ignore
+  summary: str = Field(None, description="A one liner summary of the text provided. Indicates the main purpose and intention of the text. Use proper case.")
+  tags: List[str] = Field(None, description="A list of keywords that can be used to tag and classify the message meaningfuly. Use lowercase")
 
 class TransactionType(BaseModel):
-  interaction_type: Literal['Request', 'Inquiry', 'Complaint'] = Field(None, description="The interaction type of the message, indicates whether the customer is inquiring, complaining, or requesting to the bank") # type: ignore
-  product_type: Literal['Credit Cards', 'Deposits', 'Loans'] = Field(None, description="The product that is best connected to the purpose of the message. Indicates if the message is related to Credit Cards, Deposits, or Loans") # type: ignore
+  interaction_type: Literal['Request', 'Inquiry', 'Complaint'] = Field(None, description="The interaction type of the message, indicates whether the customer is inquiring, complaining, or requesting to the bank")
+  product_type: Literal['Credit Cards', 'Deposits', 'Loans'] = Field(None, description="The product that is best connected to the purpose of the message. Indicates if the message is related to Credit Cards, Deposits, or Loans")
 
 class SentimentConfidence(BaseModel):
-  sentiment_tag: str = Field(None, description="The sentiment tag being assessed. Can be either 'Positivee', 'Negative', or 'Neutral") # type: ignore
+  sentiment_tag: str = Field(None, description="The sentiment tag being assessed. Can be either 'Positivee', 'Negative', or 'Neutral")
   sentiment_confidence_score: Optional[float] = Field(None, ge=0.0, le=1.0, description="how confident the given sentiment category is when associated with the intent of the message. Use two decimal points for the score")
   emotional_indicators: Optional[List[str]] = Field(None, description="Bigrams or trigrams that best display the particular sentiment of the message. Use lowercase. Use 'Blank' if there is no good keyword.")
 
 class Sentiment(BaseModel):
-  sentiment_category: Literal['Negative', 'Neutral', 'Positive'] = Field(None, description="the sentiment demonstrated within the message. Indicates whether the message has negative, positive, or neutral connotations") # type: ignore
+  sentiment_category: Literal['Negative', 'Neutral', 'Positive'] = Field(None, description="the sentiment demonstrated within the message. Indicates whether the message has negative, positive, or neutral connotations")
   sentiment_reasoning: Optional[str] = Field(None, description="A one liner that depicts main reason why the text was categorized as a certain sentiment. No need to add any emphases on keywords. Use proper case.")
   sentiment_distribution: List[SentimentConfidence] = Field(description="A distribution that shows how likely each sentiment (Positive, Neutral, and Negative). Note that the sum of the confidence scores should be equal to 1.0 since it's a probability distribution")
 
 class Urgency(BaseModel):
-  priority_category: Literal['High', 'Medium', 'Low'] = Field(None, description = "Describes how urgent a message needs to be addressed.") # type: ignore
+  priority_category: Literal['High', 'Medium', 'Low'] = Field(None, description = "Describes how urgent a message needs to be addressed.")
   priority_reason: Optional[str] = Field(None, description = "An explanation of why the priority level of a message is the way it is.")
 
 class ChatLogEntry(BaseModel):
-  turn_id: int = Field(None, description="A number that indicates the order in which the message is found in the conversation") # type: ignore
-  speaker: Literal['Customer', 'Bank Agent', 'Chatbot']  = Field(None, description="The entity who sent the message during the specified turn") # type: ignore
-  text: str = Field(None, description="The message sent within the turn of the speaker") # type: ignore
+  turn_id: int = Field(None, description="A number that indicates the order in which the message is found in the conversation")
+  speaker: Literal['Customer', 'Bank Agent', 'Chatbot']  = Field(None, description="The entity who sent the message during the specified turn")
+  text: str = Field(None, description="The message sent within the turn of the speaker")
 
 class DialogueHistory(BaseModel):
   dialogue_history: List[ChatLogEntry] = Field(
@@ -233,7 +232,7 @@ ctt_fewshot_prompt = FewShotPromptTemplate(
 ctt_chain_fs = ctt_fewshot_prompt | llm_text_insights
 
 ctt_chain_wrapped = RunnableLambda(lambda x: {
-    "text_to_classify": x["text"] # type: ignore
+    "text_to_classify": x["text"]
 }) | ctt_chain_fs
 
 
@@ -268,8 +267,8 @@ cpl_fewshot_prompt = FewShotPromptTemplate(
 cpl_chain_fs = cpl_fewshot_prompt | llm_text_insights
 
 cpl_chain_wrapped = RunnableLambda(lambda x: {
-    "text_to_classify": x["text"] # type: ignore
-}) | cpl_chain_fs | RunnableLambda(lambda x: urgency_parser.parse(x.content).model_dump_json(indent=2)) # type: ignore
+    "text_to_classify": x["text"]
+}) | cpl_chain_fs | RunnableLambda(lambda x: urgency_parser.parse(x.content).model_dump_json(indent=2))
 
 ct_prompt = PromptTemplate.from_template(
     """You are an expert contact center operations agent and analyst at a banking firm. Your task is to review customer messages and classify each message by selecting exactly one label from the following services/products offered by the bank: "labels": ['Credit Cards', 'Loans', 'Deposits'].
@@ -291,7 +290,7 @@ ct_fewshot_prompt = FewShotPromptTemplate(
 ct_chain_fs = ct_fewshot_prompt | llm_text_insights
 
 ct_chain_wrapped = RunnableLambda(lambda x: {
-    "text_to_classify": x["text"] # type: ignore
+    "text_to_classify": x["text"]
 }) | ct_chain_fs
 
 sentiment_prompt = PromptTemplate.from_template(
@@ -323,7 +322,7 @@ sentiment_fewshot_prompt = FewShotPromptTemplate(
 
 sentiment_chain_fs = sentiment_fewshot_prompt | llm_text_insights
 
-sentiment_chain_wrapped = RunnableLambda(lambda x: {"text_to_classify": x["text"]}) | sentiment_chain_fs | RunnableLambda(lambda x: sentiment_parser.parse(x.content).model_dump_json(indent=2)) # type: ignore
+sentiment_chain_wrapped = RunnableLambda(lambda x: {"text_to_classify": x["text"]}) | sentiment_chain_fs | RunnableLambda(lambda x: sentiment_parser.parse(x.content).model_dump_json(indent=2))
 
 summary_prompt = PromptTemplate.from_template(
     """You are an expert contact center operations agent and analyst at a banking firm.
@@ -337,7 +336,7 @@ summary_prompt = PromptTemplate.from_template(
 summary_chain = summary_prompt | llm_text_insights
 
 summary_chain_wrapped = RunnableLambda(lambda x: {
-    "text_to_summarize": x["text"] # type: ignore
+    "text_to_summarize": x["text"]
 }) | summary_chain
 
 kw_prompt = PromptTemplate.from_template(
@@ -354,7 +353,7 @@ kw_prompt = PromptTemplate.from_template(
 kw_chain = kw_prompt | llm_text_insights
 
 kw_chain_wrapped = RunnableLambda(lambda x: {
-    "text_to_extract": x["text"] # type: ignore
+    "text_to_extract": x["text"]
 }) | kw_chain
 
 
@@ -393,35 +392,35 @@ dialogue_history_prompt = PromptTemplate(
 dialogue_history_chain = dialogue_history_prompt | llm_text_insights
 
 dialogue_history_chain_wrapped = RunnableLambda(lambda x: {
-    "sample_text": x["text"] # type: ignore
-}) | dialogue_history_chain | RunnableLambda(lambda x: dialogue_history_parser.parse(x.content).model_dump_json(indent=2)) # type: ignore
+    "sample_text": x["text"]
+}) | dialogue_history_chain | RunnableLambda(lambda x: dialogue_history_parser.parse(x.content).model_dump_json(indent=2))
 
 
 def process_text_to_insight(text, sleep_time_req = 5):
   try:
     result = {}
 
-    result['case_transaction_type'] = ctt_chain_wrapped.invoke({'text': text}).content.strip() # type: ignore
+    result['case_transaction_type'] = ctt_chain_wrapped.invoke({'text': text}).content.strip()
     time.sleep(sleep_time_req)
 
     result['case_priority_level'] = cpl_chain_wrapped.invoke({'text': text})
     time.sleep(sleep_time_req)
 
-    result['case_type'] = ct_chain_wrapped.invoke({'text': text}).content.strip() # type: ignore
+    result['case_type'] = ct_chain_wrapped.invoke({'text': text}).content.strip()
     time.sleep(sleep_time_req)
 
     result['sentiment'] = sentiment_chain_wrapped.invoke({'text': text})
     time.sleep(sleep_time_req)
 
-    result['summary'] = summary_chain_wrapped.invoke({'text': text}).content.strip() # type: ignore
+    result['summary'] = summary_chain_wrapped.invoke({'text': text}).content.strip()
     time.sleep(sleep_time_req)
 
-    result['keywords'] = kw_chain_wrapped.invoke({'text': text}).content.strip() # type: ignore
+    result['keywords'] = kw_chain_wrapped.invoke({'text': text}).content.strip()
 
     result['dialogue_history'] = dialogue_history_chain_wrapped.invoke({'text': text})
 
   except Exception as e:
-    tqdm.write(f"[error] Skipping row due to: {e}") # type: ignore
+    tqdm.write(f"[error] Skipping row due to: {e}")
     result = {
         "case_text": text,
         "case_transaction_type": None,

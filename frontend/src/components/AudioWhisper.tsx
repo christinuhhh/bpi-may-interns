@@ -1,9 +1,19 @@
 import React, { useState, useRef, type JSX } from "react";
 import axios, { AxiosError } from "axios";
 
+// Updated interface to match backend response
 interface WhisperResult {
   transcription?: string;
   translation?: string;
+  insights?: {
+    case_transaction_type?: string;
+    case_priority_level?: any; // Can be string or object
+    case_type?: string;
+    sentiment?: any; // Can be string or object
+    summary?: string;
+    keywords?: string;
+    dialogue_history?: any; // Can be string or object
+  };
   error?: string;
 }
 
@@ -60,15 +70,30 @@ export default function AudioWhisper(): JSX.Element {
     form.append("audio", file);
 
     try {
+      // const res = await axios.post<WhisperResult>(
+      //   "https://riu-rd-contact-center-operations.hf.space/audio/whisper",
       const res = await axios.post<WhisperResult>(
-        "https://riu-rd-contact-center-operations.hf.space/audio/whisper",
+            "http://localhost:8000/audio/whisper",
         form,
         {
           headers: { "Content-Type": "multipart/form-data" },
           timeout: 120000, // 2 minute timeout for audio processing
         }
       );
-      setResult(res.data);
+      // Process the result to parse stringified JSON in insights
+      const processedResult: WhisperResult = { ...res.data };
+      if (processedResult.insights) {
+        if (typeof processedResult.insights.case_priority_level === 'string') {
+          processedResult.insights.case_priority_level = parseJsonSafely(processedResult.insights.case_priority_level);
+        }
+        if (typeof processedResult.insights.sentiment === 'string') {
+          processedResult.insights.sentiment = parseJsonSafely(processedResult.insights.sentiment);
+        }
+        if (typeof processedResult.insights.dialogue_history === 'string') {
+          processedResult.insights.dialogue_history = parseJsonSafely(processedResult.insights.dialogue_history);
+        }
+      }
+      setResult(processedResult);
     } catch (err) {
       console.error("Upload error:", err);
       const axiosError = err as AxiosError<ErrorResponse>;
@@ -128,6 +153,60 @@ export default function AudioWhisper(): JSX.Element {
     return `${minutes.toString().padStart(2, "0")}:${seconds
       .toString()
       .padStart(2, "0")}`;
+  };
+
+  // Helper function to safely parse JSON strings
+  const parseJsonSafely = (value: any) => {
+    if (typeof value === 'string') {
+      try {
+        return JSON.parse(value);
+      } catch {
+        return value; // Return original value if parsing fails
+      }
+    }
+    return value; // Return original value if not a string
+  };
+
+  // Helper functions for styling
+  const getSentimentColor = (sentiment: string): string => {
+    switch (sentiment.toLowerCase()) {
+      case "positive":
+        return "#28a745";
+      case "negative":
+        return "#dc3545";
+      case "neutral":
+        return "#6c757d";
+      default:
+        return "#007bff";
+    }
+  };
+
+  const getPriorityColor = (priority: string): string => {
+    switch (priority.toLowerCase()) {
+      case "urgent":
+      case "high":
+        return "#dc3545";
+      case "medium":
+        return "#fd7e14";
+      case "low":
+        return "#28a745";
+      default:
+        return "#6c757d";
+    }
+  };
+
+  const getSpeakerColor = (speaker: string): string => {
+    const colors = [
+      "#FF6B6B",
+      "#4ECDC4",
+      "#45B7D1",
+      "#96CEB4",
+      "#FFEAA7",
+      "#DDA0DD",
+      "#98D8C8",
+      "#F7DC6F",
+    ];
+    return speaker.toLowerCase() === "customer" ? colors[0] : colors[1];
   };
 
   return (
@@ -345,6 +424,349 @@ export default function AudioWhisper(): JSX.Element {
             </div>
           )}
 
+          {/* Updated Insights Section with Card Layout */}
+          {result.insights && (
+            <div
+              style={{
+                marginBottom: "15px",
+                padding: "15px",
+                backgroundColor: "#f0f8ff",
+                border: "1px solid #b3d9ff",
+                borderRadius: "8px",
+              }}
+            >
+              <h5 style={{ color: "#333", marginBottom: "15px" }}>
+                Text Analysis Insights:
+              </h5>
+
+              {/* Key Insights Cards */}
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+                  gap: "15px",
+                  marginBottom: "20px",
+                }}
+              >
+                {/* Case Type */}
+                {result.insights.case_type && (
+                  <div
+                    style={{
+                      padding: "15px",
+                      backgroundColor: "#e3f2fd",
+                      border: "1px solid #bbdefb",
+                      borderRadius: "8px",
+                    }}
+                  >
+                    <h6 style={{ color: "#1565c0", marginBottom: "8px", fontSize: "14px" }}>
+                      Case Type
+                    </h6>
+                    <p style={{ margin: 0, fontWeight: "bold", fontSize: "16px" }}>
+                      {result.insights.case_type}
+                    </p>
+                  </div>
+                )}
+
+                {/* Transaction Type */}
+                {result.insights.case_transaction_type && (
+                  <div
+                    style={{
+                      padding: "15px",
+                      backgroundColor: "#f3e5f5",
+                      border: "1px solid #ce93d8",
+                      borderRadius: "8px",
+                    }}
+                  >
+                    <h6 style={{ color: "#7b1fa2", marginBottom: "8px", fontSize: "14px" }}>
+                      Transaction Type
+                    </h6>
+                    <p style={{ margin: 0, fontWeight: "bold", fontSize: "16px" }}>
+                      {result.insights.case_transaction_type}
+                    </p>
+                  </div>
+                )}
+
+                {/* Priority Level */}
+                {result.insights.case_priority_level && (
+                  <div
+                    style={{
+                      padding: "15px",
+                      backgroundColor: "#fff3e0",
+                      border: "1px solid #ffcc02",
+                      borderRadius: "8px",
+                    }}
+                  >
+                    <h6 style={{ color: "#f57c00", marginBottom: "8px", fontSize: "14px" }}>
+                      Priority Level
+                    </h6>
+                    {typeof result.insights.case_priority_level === 'object' && 
+                     result.insights.case_priority_level.priority_category ? (
+                      <>
+                        <p
+                          style={{
+                            margin: "0 0 5px 0",
+                            fontWeight: "bold",
+                            fontSize: "16px",
+                            color: getPriorityColor(result.insights.case_priority_level.priority_category),
+                          }}
+                        >
+                          {result.insights.case_priority_level.priority_category}
+                        </p>
+                        <p style={{ margin: 0, fontSize: "12px", color: "#666" }}>
+                          {result.insights.case_priority_level.priority_reason}
+                        </p>
+                      </>
+                    ) : (
+                      <p style={{ margin: 0, fontWeight: "bold", fontSize: "16px" }}>
+                        {typeof result.insights.case_priority_level === 'string' 
+                          ? result.insights.case_priority_level 
+                          : JSON.stringify(result.insights.case_priority_level)}
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {/* Sentiment */}
+                {result.insights.sentiment && (
+                  <div
+                    style={{
+                      padding: "15px",
+                      backgroundColor: "#e8f5e8",
+                      border: "1px solid #c8e6c9",
+                      borderRadius: "8px",
+                    }}
+                  >
+                    <h6 style={{ color: "#2e7d32", marginBottom: "8px", fontSize: "14px" }}>
+                      Sentiment
+                    </h6>
+                    {typeof result.insights.sentiment === 'object' && 
+                     result.insights.sentiment.sentiment_category ? (
+                      <>
+                        <p
+                          style={{
+                            margin: "0 0 5px 0",
+                            fontWeight: "bold",
+                            fontSize: "16px",
+                            color: getSentimentColor(result.insights.sentiment.sentiment_category),
+                          }}
+                        >
+                          {result.insights.sentiment.sentiment_category}
+                        </p>
+                        <p style={{ margin: 0, fontSize: "12px", color: "#666" }}>
+                          {result.insights.sentiment.sentiment_reasoning}
+                        </p>
+                      </>
+                    ) : (
+                      <p style={{ margin: 0, fontWeight: "bold", fontSize: "16px" }}>
+                        {typeof result.insights.sentiment === 'string' 
+                          ? result.insights.sentiment 
+                          : JSON.stringify(result.insights.sentiment)}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Summary */}
+              {result.insights.summary && (
+                <div
+                  style={{
+                    marginBottom: "20px",
+                    padding: "15px",
+                    backgroundColor: "#f8f9fa",
+                    border: "1px solid #dee2e6",
+                    borderRadius: "8px",
+                  }}
+                >
+                  <h5 style={{ color: "#333", marginBottom: "10px" }}>Summary</h5>
+                  <p style={{ margin: 0, lineHeight: "1.6" }}>{result.insights.summary}</p>
+                </div>
+              )}
+
+              {/* Keywords */}
+              {result.insights.keywords && (
+                <div
+                  style={{
+                    marginBottom: "20px",
+                    padding: "15px",
+                    backgroundColor: "#fff8e1",
+                    border: "1px solid #ffecb3",
+                    borderRadius: "8px",
+                  }}
+                >
+                  <h5 style={{ color: "#f57c00", marginBottom: "10px" }}>Keywords</h5>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                    {result.insights.keywords.split(",").map((keyword, index) => (
+                      <span
+                        key={index}
+                        style={{
+                          backgroundColor: "#ff9800",
+                          color: "white",
+                          padding: "4px 12px",
+                          borderRadius: "16px",
+                          fontSize: "12px",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        {keyword.trim()}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Sentiment Distribution */}
+              {result.insights.sentiment && 
+               typeof result.insights.sentiment === 'object' && 
+               result.insights.sentiment.sentiment_distribution && (
+                <div
+                  style={{
+                    marginBottom: "20px",
+                    padding: "15px",
+                    backgroundColor: "#f8f9fa",
+                    border: "1px solid #dee2e6",
+                    borderRadius: "8px",
+                  }}
+                >
+                  <h5 style={{ color: "#333", marginBottom: "15px" }}>
+                    Sentiment Distribution
+                  </h5>
+                  {result.insights.sentiment.sentiment_distribution.map((item: any, index: number) => (
+                    <div
+                      key={index}
+                      style={{
+                        marginBottom: "10px",
+                        padding: "10px",
+                        backgroundColor: "white",
+                        border: "1px solid #dee2e6",
+                        borderRadius: "6px",
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          marginBottom: "5px",
+                        }}
+                      >
+                        <span
+                          style={{
+                            fontWeight: "bold",
+                            color: getSentimentColor(item.sentiment_tag),
+                          }}
+                        >
+                          {item.sentiment_tag}
+                        </span>
+                        <span
+                          style={{
+                            fontSize: "14px",
+                            fontWeight: "bold",
+                            color: getSentimentColor(item.sentiment_tag),
+                          }}
+                        >
+                          {(item.sentiment_confidence_score * 100).toFixed(1)}%
+                        </span>
+                      </div>
+                      <div
+                        style={{
+                          width: "100%",
+                          height: "6px",
+                          backgroundColor: "#e9ecef",
+                          borderRadius: "3px",
+                          overflow: "hidden",
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: `${item.sentiment_confidence_score * 100}%`,
+                            height: "100%",
+                            backgroundColor: getSentimentColor(item.sentiment_tag),
+                            borderRadius: "3px",
+                          }}
+                        />
+                      </div>
+                      {item.emotional_indicators && 
+                       item.emotional_indicators.length > 0 && 
+                       item.emotional_indicators[0] !== "blank" && (
+                        <div style={{ marginTop: "8px" }}>
+                          <span style={{ fontSize: "12px", color: "#666" }}>
+                            Indicators: {item.emotional_indicators.join(", ")}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Dialogue History */}
+              {result.insights.dialogue_history && 
+               typeof result.insights.dialogue_history === 'object' && 
+               result.insights.dialogue_history.dialogue_history && (
+                <div
+                  style={{
+                    marginBottom: "20px",
+                    padding: "15px",
+                    backgroundColor: "#f8f9fa",
+                    border: "1px solid #dee2e6",
+                    borderRadius: "8px",
+                  }}
+                >
+                  <h5 style={{ color: "#333", marginBottom: "15px" }}>
+                    Dialogue History
+                  </h5>
+                  <div style={{ maxHeight: "300px", overflow: "auto" }}>
+                    {result.insights.dialogue_history.dialogue_history.map((turn: any, index: number) => (
+                      <div
+                        key={index}
+                        style={{
+                          marginBottom: "10px",
+                          padding: "12px",
+                          backgroundColor: "white",
+                          border: `2px solid ${getSpeakerColor(turn.speaker)}`,
+                          borderRadius: "8px",
+                          borderLeft: `6px solid ${getSpeakerColor(turn.speaker)}`,
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            marginBottom: "8px",
+                          }}
+                        >
+                          <span
+                            style={{
+                              fontWeight: "bold",
+                              color: getSpeakerColor(turn.speaker),
+                              fontSize: "14px",
+                            }}
+                          >
+                            {turn.speaker}
+                          </span>
+                          <span style={{ fontSize: "12px", color: "#666" }}>
+                            Turn {turn.turn_id}
+                          </span>
+                        </div>
+                        <p
+                          style={{
+                            margin: 0,
+                            lineHeight: "1.5",
+                            fontSize: "14px",
+                          }}
+                        >
+                          {turn.text}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           <div
             style={{
               padding: "15px",
@@ -392,8 +814,7 @@ export default function AudioWhisper(): JSX.Element {
         <br />
         <strong>Max file size:</strong> 100MB
         <br />
-        <strong>Features:</strong> Transcription and translation using OpenAI
-        Whisper
+        <strong>Features:</strong> Transcription, translation, and AI-powered text analysis using OpenAI Whisper
       </div>
     </div>
   );

@@ -16,6 +16,10 @@ A comprehensive full-stack application that provides AI-powered insights for con
 - **Speaker Diarization**: Identify different speakers and analyze conversations
 - **Multiple Audio Formats**: Support for WAV, MP3, MP4, M4A, FLAC
 
+### Text Processing
+- **Gemini Text Insight Extraction**: Extract insights from raw text such as sentiment, urgency level, transaction type, dialogue history, summary and keywords
+- **Supported Formats**: Raw text input 
+
 ### Modern Web Interface
 - **Responsive Design**: Beautiful, intuitive React interface
 - **Drag & Drop**: Easy file uploads with visual feedback
@@ -79,8 +83,8 @@ brew install ffmpeg
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/bpi-may-interns.git # In this case, the username is 'christinuhhh'
-cd bpi-may-interns
+git clone https://github.com/yourusername/contact-center-insights.git
+cd contact-center-insights
 ```
 
 ### 2. Backend Setup (FastAPI)
@@ -90,8 +94,6 @@ cd bpi-may-interns
 **Option A: Using venv**
 ```bash
 cd backend
-
-# Create a virtual environment
 python3.11 -m venv venv
 
 # Activate virtual environment
@@ -118,10 +120,7 @@ pip install -r requirements.txt
 
 1. Copy the example environment file:
 ```bash
-# MacOS
 cp .env.example .env
-# Windows OS
-copy .env.example .env
 ```
 
 2. Edit `.env` and add your API key:
@@ -163,9 +162,6 @@ npm run dev
 The frontend will be available at:
 - **Application**: http://localhost:5173
 
-### Vercel link
-- Alternatively, you may access the deployed version of this web app through https://contact-center-insights.vercel.app/ (please copy-paste this. hyperlink not working)
-
 ## 🎯 Usage Guide
 
 ### Document Processing
@@ -189,18 +185,27 @@ The frontend will be available at:
 1. **Navigate** to "Audio to Insights" → "Whisper Transcription"
 2. **Upload** an audio file
 3. **Preview** with built-in audio player
-4. **Process** to get transcription and translation
+4. **Process** to get transcription, translation, and insights 
 
 #### Gemini Processing
 1. **Navigate** to "Audio to Insights" → "Gemini Processing"
 2. **Upload** an audio file
-3. **Process** for advanced AI transcription and translation
+3. **Process** for advanced AI transcription, translation, and insights generation
 
 #### Speaker Diarization
 1. **Navigate** to "Audio to Insights" → "Speaker Diarization"
 2. **Upload** a conversation audio file
 3. **Analyze** to identify different speakers
 4. **View** color-coded speaker segments
+
+### Text Processing
+
+1. **Navigate** to the "Text to Insights" tab
+2. **Enter** your text message by:
+   - Copying the raw text from your text source or document
+   - Pasting the text into the entry box in the tab
+3. **Click** "Analyze Text" to process
+4. **View** extracted data and insights generated
 
 ## 🔧 Development
 
@@ -216,6 +221,7 @@ The FastAPI server includes:
 - `POST /audio/whisper` - Whisper transcription
 - `POST /audio/gemini` - Gemini audio processing
 - `POST /audio/diarization` - Speaker diarization
+- `POST /text` - Text insight extraction
 
 ### Frontend Development
 

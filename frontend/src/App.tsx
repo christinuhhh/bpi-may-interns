@@ -1,4 +1,4 @@
-import React, { useState, type JSX } from "react";
+import { useState, type JSX } from "react";
 import FileUpload from "./components/FileUpload";
 import ResultDisplay from "./components/ResultDisplay";
 import AudioInsights from "./components/AudioInsights";

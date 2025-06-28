@@ -79,8 +79,8 @@ brew install ffmpeg
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/contact-center-insights.git
-cd contact-center-insights
+git clone https://github.com/yourusername/bpi-may-interns.git # In this case, the username is 'christinuhhh'
+cd bpi-may-interns
 ```
 
 ### 2. Backend Setup (FastAPI)
@@ -90,6 +90,8 @@ cd contact-center-insights
 **Option A: Using venv**
 ```bash
 cd backend
+
+# Create a virtual environment
 python3.11 -m venv venv
 
 # Activate virtual environment
@@ -116,7 +118,10 @@ pip install -r requirements.txt
 
 1. Copy the example environment file:
 ```bash
+# MacOS
 cp .env.example .env
+# Windows OS
+copy .env.example .env
 ```
 
 2. Edit `.env` and add your API key:
@@ -157,6 +162,9 @@ npm run dev
 
 The frontend will be available at:
 - **Application**: http://localhost:5173
+
+### Vercel link
+- Alternatively, you may access the deployed version of this web app through https://contact-center-insights.vercel.app/ (please copy-paste this. hyperlink not working)
 
 ## 🎯 Usage Guide
 

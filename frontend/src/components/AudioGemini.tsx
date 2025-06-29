@@ -73,7 +73,7 @@ export default function AudioGemini(): JSX.Element {
       // const res = await axios.post<GeminiResult>(
       //   "https://riu-rd-contact-center-operations.hf.space/audio/gemini",
       const res = await axios.post<GeminiResult>(
-        "https://riu-rd-contact-center-operations.hf.space/audio/whisper",
+        "https://riu-rd-contact-center-operations.hf.space/audio/gemini",
         form,
         {
           headers: { "Content-Type": "multipart/form-data" },
